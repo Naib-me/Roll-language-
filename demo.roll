@@ -1,0 +1,6 @@
+import io
+
+main()
+{
+    io.println("Hello world")
+}
