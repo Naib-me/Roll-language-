@@ -2,5 +2,6 @@ import io
 
 main()
 {
-    io.println("Hello world")
+    var name str give "Hello world"
+    io.println(name)
 }

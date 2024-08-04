@@ -5,6 +5,8 @@ from pathlib import Path
 tab = 1
 tab_cun = 1
 import_obj = ""
+val_name = ""
+lines = 1
 
 
 def create_folder_in_appdata(folder_name):
@@ -61,21 +63,38 @@ def read_file_from_appdata(file_name):
 
 
 def main(file_path):
+    global lines
     global import_obj
     global tab
     global tab_cun
-    if "/" in file_path:
+    """if "/" in file_path:
         filename = file_path.split('/')[-1]  # 去除路径，只保留文件名和扩展名
         file_without_extension = filename.split('.')[0]  # 去除扩展名，只保留文件名
     else:
         filename_with_extension = 'file.roll'
         # 直接使用文件名和扩展名
         file_without_extension = filename_with_extension.split('.')[0]
+    """
+    # 使用os.path.basename获取文件名和后缀
+    file_name_with_extension = os.path.basename(file_path)
 
-    run = open(f"{file_without_extension}.java", 'w+', encoding='utf-8')
-    run.write(f"public class {file_without_extension}" + "{\n")
+    # 使用os.path.splitext分割文件名和后缀
+    file_name, file_extension = os.path.splitext(file_name_with_extension)
+
+    # file_name现在就是不包含后缀的文件名
+    # file_extension是文件的后缀，包括点（.）
+
+    # 使用os.path.dirname获取文件所在目录
+    directory = os.path.dirname(file_path)
+
+    """print("不包含后缀的文件名:", file_name)
+    print("后缀:", file_extension)
+    """
+
+    run = open(f"{file_name}.java", 'w+', encoding='utf-8')
+    run.write(f"public class {file_name}" + "{\n")
     run.close()
-    run = open(f"{file_without_extension}.java", 'a', encoding='utf-8')
+    run = open(f"{file_name}.java", 'a', encoding='utf-8')
 
     # 打开文件，使用'utf-8'编码以支持中文
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -126,6 +145,72 @@ def main(file_path):
                     tab = tab_cun
 
                     run.write("}\n")
+                elif x[0] == "var": # var name str give "Hello"
+                    var_name = x[1]
+                    test = "".join(x[4::])
+                    if x[2] == "str":
+                        while tab >= 1:
+                            run.write("    ")
+                            tab -= 1
+                        tab = tab_cun
+                        run.write(f"String {var_name} = {test};\n")
+                    elif x[2] == "int":
+                        while tab >= 1:
+                            run.write("    ")
+                            tab -= 1
+                        tab = tab_cun
+                        run.write(f"int {var_name} = {test};\n")
+                    elif x[2] == "boo":
+                        while tab >= 1:
+                            run.write("    ")
+                            tab -= 1
+                        tab = tab_cun
+                        run.write(f"boolean {var_name} = {test};\n")
+                    elif x[2] == "dou":
+                        while tab >= 1:
+                            run.write("    ")
+                            tab -= 1
+                        tab = tab_cun
+                        run.write(f"double {var_name} = {test};\n")
+                    else:
+                        while tab >= 1:
+                            run.write("    ")
+                            tab -= 1
+                        tab = tab_cun
+                        run.write(f"{x[2]} {var_name} = {test}")
+                elif x[0] == "val": # val name str give "Hello"
+                    var_name = x[1]
+                    test = "".join(x[4::])
+                    if x[2] == "str":
+                        while tab >= 1:
+                            run.write("    ")
+                            tab -= 1
+                        tab = tab_cun
+                        run.write(f"final String {var_name} = {test};\n")
+                    elif x[2] == "int":
+                        while tab >= 1:
+                            run.write("    ")
+                            tab -= 1
+                        tab = tab_cun
+                        run.write(f"final int {var_name} = {test};\n")
+                    elif x[2] == "boo":
+                        while tab >= 1:
+                            run.write("    ")
+                            tab -= 1
+                        tab = tab_cun
+                        run.write(f"final boolean {var_name} = {test};\n")
+                    elif x[2] == "dou":
+                        while tab >= 1:
+                            run.write("    ")
+                            tab -= 1
+                        tab = tab_cun
+                        run.write(f"final double {var_name} = {test};\n")
+                    else:
+                        while tab >= 1:
+                            run.write("    ")
+                            tab -= 1
+                        tab = tab_cun
+                        run.write(f"final {x[2]} {var_name} = {test}")
                 else:
                     if x[0].split(".")[0] in import_obj:
                         while tab >= 1:
@@ -133,11 +218,16 @@ def main(file_path):
                             tab -= 1
                         tab = tab_cun
                         run.write(line + ";\n")
+                        continue
+                    else:
+                        print(f"ERR({lines}):没有导入的模块")
+        lines += 1
     run.write("}\n")
     run.close()
-    os.system(f"javac {file_without_extension}.java")
-    os.system(f"java {file_without_extension}")
-    os.remove(f"{file_without_extension}.java")
+    os.system(f"javac {file_name}.java")
+    os.system(f"java {file_name}")
+    # os.system(f"javap -c {file_name}")
+    os.remove(f"{file_name}.java")
 
 
 # 示例使用
